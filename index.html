@@ -74,7 +74,7 @@
     <div id="game-and-profile-container" class="hidden w-full max-w-5xl flex flex-col md:flex-row items-start justify-center space-y-8 md:space-y-0 md:space-x-8 p-4 relative">
 
         <div class="absolute top-4 left-4 right-4 flex justify-between items-center z-50">
-            <div id="rewards-claimed-container" class="bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg flex items-center space-x-2 transform transition-transform duration-200 hover:scale-105">
+            <div id="rewards-claimed-container" class="bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg flex items-center space-x-2 transform transition-transform duration-200 hover:scale-105 cursor-pointer">
                 <span class="text-xl">🎁</span>
                 <div class="flex flex-col items-start leading-none">
                     <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Earned Point</span>
@@ -109,7 +109,6 @@
         </div>
 
         <div id="game-container" class="mt-28 md:mt-0 bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm flex flex-col items-center space-y-6 transform transition-transform duration-300">
-
             <div class="flex flex-col items-center space-y-2">
                 <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 animate-pulse">
                     Welcome, <span id="user-name-display"></span>!
@@ -149,12 +148,48 @@
         </div>
     </div>
 
+    <div id="withdrawal-page-container" class="hidden bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-lg md:max-w-xl flex flex-col items-center space-y-6 relative">
+        <button id="back-to-home-button" class="absolute top-4 left-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+
+        <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mt-12 md:mt-0">
+            Withdrawal
+        </h2>
+        <p class="text-center text-gray-600 dark:text-gray-400">
+            Current Points: <span id="current-points-withdrawal" class="font-bold text-purple-500">0</span>
+        </p>
+
+        <div class="w-full overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-xl shadow-md">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Points
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Amount (₹)
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="withdrawal-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+
     <script>
-        // Use `window.onload` to ensure all HTML elements are loaded before the script runs.
         window.onload = function() {
             // --- UI Elements ---
             const loginContainer = document.getElementById('login-container');
             const gameAndProfileContainer = document.getElementById('game-and-profile-container');
+            const withdrawalPageContainer = document.getElementById('withdrawal-page-container');
             const userNameInput = document.getElementById('user-name-input');
             const startButton = document.getElementById('start-button');
             const logoutButton = document.getElementById('logout-button');
@@ -170,42 +205,48 @@
             const dailyTasksList = document.getElementById('daily-tasks-list');
             const dailyTasksTitle = document.getElementById('daily-tasks-title');
             
-            // New elements for profile toggle
             const profileInfoSection = document.getElementById('profile-info-section');
             const profileOptions = document.getElementById('profile-options');
+
+            // New elements for the withdrawal page
+            const rewardsClaimedContainer = document.getElementById('rewards-claimed-container');
+            const backToHomeButton = document.getElementById('back-to-home-button');
+            const currentPointsWithdrawal = document.getElementById('current-points-withdrawal');
+            const withdrawalTableBody = document.getElementById('withdrawal-table-body');
 
             // --- Game State Variables ---
             let userName = '';
             let points = 0;
             let rewardsClaimed = 0;
-            let dailyTasksClaimedCount = 0; // New variable to track daily task claims
+            let dailyTasksClaimedCount = 0;
             let tapCount = 0;
             const rewardCost = 10;
             const clickValue = 1;
             
-            // New state flags for the new daily tasks
             let videoWatched = false;
             let youtubeSubscribed = false;
 
-            // Updated daily tasks array with the new tasks
             const dailyTasks = [
                 { id: 'tap-task', text: 'Tap 50 times', points: 10, completed: false, check: () => tapCount >= 50 },
                 { id: 'reward-task', text: 'Daily bonus 5Rs', points: 5, completed: false, check: () => rewardsClaimed >= 1 },
-                { id: 'video-task', text: 'Subcribe the channel 8Rs', points: 8, completed: false, check: () => videoWatched },
+                { id: 'video-task', text: 'Subscribe the channel 8Rs', points: 8, completed: false, check: () => videoWatched },
                 { id: 'youtube-task', text: 'Subscribe to our YouTube channel 8Rs', points: 8, completed: false, check: () => youtubeSubscribed }
             ];
 
-            // --- Utility Functions ---
+            const withdrawalOptions = [
+                { points: 100, amount: 10 },
+                { points: 200, amount: 20 },
+                { points: 500, amount: 50 },
+                { points: 1000, amount: 100 }
+            ];
 
-            /**
-             * Saves the game state to localStorage.
-             */
+            // --- Utility Functions ---
             function saveGameState() {
                 const gameState = {
                     userName,
                     points,
                     rewardsClaimed,
-                    dailyTasksClaimedCount, // Save the new variable
+                    dailyTasksClaimedCount,
                     tapCount,
                     videoWatched,
                     youtubeSubscribed,
@@ -217,9 +258,6 @@
                 localStorage.setItem('tapAndEarnGameState', JSON.stringify(gameState));
             }
 
-            /**
-             * Loads the game state from localStorage.
-             */
             function loadGameState() {
                 const savedState = localStorage.getItem('tapAndEarnGameState');
                 if (savedState) {
@@ -227,12 +265,11 @@
                     userName = gameState.userName;
                     points = gameState.points;
                     rewardsClaimed = gameState.rewardsClaimed;
-                    dailyTasksClaimedCount = gameState.dailyTasksClaimedCount; // Load the new variable
+                    dailyTasksClaimedCount = gameState.dailyTasksClaimedCount;
                     tapCount = gameState.tapCount;
                     videoWatched = gameState.videoWatched;
                     youtubeSubscribed = gameState.youtubeSubscribed;
                     
-                    // Update daily tasks from saved state
                     gameState.dailyTasks.forEach(savedTask => {
                         const taskToUpdate = dailyTasks.find(task => task.id === savedTask.id);
                         if (taskToUpdate) {
@@ -240,32 +277,21 @@
                         }
                     });
 
-                    return true; // Return true if a state was loaded
+                    return true;
                 }
-                return false; // Return false if no state was found
+                return false;
             }
 
-            /**
-             * Displays a message in a specified message box for a short duration.
-             * @param {HTMLElement} messageBox The element to display the message in.
-             * @param {string} message The message to display.
-             * @param {string} color The Tailwind text color class (e.g., 'text-red-500').
-             */
             function showMessage(messageBox, message, color) {
-                // Clear previous classes and set the new ones
                 messageBox.className = `h-8 text-center font-semibold transition-opacity duration-300 opacity-100 ${color}`;
                 messageBox.textContent = message;
 
-                // Fade out the message after 1.5 seconds
                 setTimeout(() => {
                     messageBox.classList.remove('opacity-100');
                     messageBox.classList.add('opacity-0');
                 }, 1500);
             }
 
-            /**
-             * Renders the daily tasks into the UI.
-             */
             function renderDailyTasks() {
                 dailyTasksList.innerHTML = '';
                 dailyTasks.forEach(task => {
@@ -284,7 +310,6 @@
                         checkmark.textContent = '✅';
                         taskElement.appendChild(checkmark);
                     } else {
-                        // Check if the task is a link-based task
                         if (task.id === 'video-task' || task.id === 'youtube-task') {
                             const linkButton = document.createElement('a');
                             linkButton.textContent = (task.id === 'video-task') ? 'Subscribe 10Rs' : 'Subscribe 10Rs';
@@ -293,7 +318,6 @@
                             linkButton.className = 'px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none';
 
                             linkButton.addEventListener('click', () => {
-                                // Mark the task as completed and give points
                                 if (task.id === 'video-task') {
                                     videoWatched = true;
                                 } else if (task.id === 'youtube-task') {
@@ -301,15 +325,14 @@
                                 }
                                 task.completed = true;
                                 points += task.points;
-                                dailyTasksClaimedCount++; // Increment daily task claimed count
+                                dailyTasksClaimedCount++;
                                 showMessage(gameMessageBox, `+${task.points} Bonus Points!`, 'text-yellow-500');
                                 updateDisplays();
                                 renderDailyTasks();
-                                saveGameState(); // Save state after completing a task
+                                saveGameState();
                             });
                             taskElement.appendChild(linkButton);
                         } else {
-                            // These are the original tasks that require a condition to be met
                             const completeButton = document.createElement('button');
                             completeButton.textContent = `Claim +${task.points}`;
                             completeButton.className = 'px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none';
@@ -322,11 +345,11 @@
                                 if (task.check()) {
                                     task.completed = true;
                                     points += task.points;
-                                    dailyTasksClaimedCount++; // Increment daily task claimed count
+                                    dailyTasksClaimedCount++;
                                     showMessage(gameMessageBox, `+${task.points} Bonus Points!`, 'text-yellow-500');
                                     updateDisplays();
                                     renderDailyTasks();
-                                    saveGameState(); // Save state after claiming points
+                                    saveGameState();
                                 }
                             });
                             taskElement.appendChild(completeButton);
@@ -336,18 +359,92 @@
                 });
             }
 
-            // --- Login/Logout Logic ---
+            function renderWithdrawalOptions() {
+                withdrawalTableBody.innerHTML = '';
+                currentPointsWithdrawal.textContent = points;
+                
+                withdrawalOptions.forEach(option => {
+                    const row = document.createElement('tr');
+                    row.className = 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200';
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                            ${option.points}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            ₹${option.amount}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button data-points="${option.points}" class="withdraw-button px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+                                Withdraw
+                            </button>
+                        </td>
+                    `;
+                    withdrawalTableBody.appendChild(row);
+                });
 
+                // Add event listeners to the new buttons
+                document.querySelectorAll('.withdraw-button').forEach(button => {
+                    const withdrawalPoints = parseInt(button.dataset.points);
+                    if (points >= withdrawalPoints) {
+                        button.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600');
+                        button.disabled = false;
+                    } else {
+                        button.classList.add('bg-gray-300', 'text-gray-500');
+                        button.disabled = true;
+                    }
+
+                    button.addEventListener('click', (event) => {
+                        handleWithdrawal(withdrawalPoints);
+                    });
+                });
+            }
+
+            function handleWithdrawal(withdrawalPoints) {
+                if (points >= withdrawalPoints) {
+                    points -= withdrawalPoints;
+                    rewardsClaimed++; // Consider a separate counter for withdrawals if needed
+                    updateDisplays();
+                    renderWithdrawalOptions();
+                    saveGameState();
+                    // You would add logic here to trigger a real withdrawal process (e.g., show a success message, an input field for UPI ID, etc.)
+                    alert(`Successfully withdrew for ${withdrawalPoints} points! Your new balance is ${points}.`);
+                }
+            }
+
+            // --- View Switching Logic ---
+            function showLoginView() {
+                loginContainer.classList.remove('hidden');
+                gameAndProfileContainer.classList.add('hidden');
+                withdrawalPageContainer.classList.add('hidden');
+            }
+
+            function showGameView() {
+                loginContainer.classList.add('hidden');
+                gameAndProfileContainer.classList.remove('hidden');
+                withdrawalPageContainer.classList.add('hidden');
+                updateDisplays();
+                checkRewardStatus();
+                renderDailyTasks();
+            }
+
+            function showWithdrawalView() {
+                loginContainer.classList.add('hidden');
+                gameAndProfileContainer.classList.add('hidden');
+                withdrawalPageContainer.classList.remove('hidden');
+                renderWithdrawalOptions();
+            }
+
+            // --- Login/Logout Logic ---
             function resetGameState() {
                 points = 0;
                 rewardsClaimed = 0;
-                dailyTasksClaimedCount = 0; // Reset the new variable
+                dailyTasksClaimedCount = 0;
                 tapCount = 0;
                 videoWatched = false;
                 youtubeSubscribed = false;
                 userNameInput.value = '';
                 dailyTasks.forEach(task => task.completed = false);
-                localStorage.removeItem('tapAndEarnGameState'); // Clear the saved state
+                localStorage.removeItem('tapAndEarnGameState');
                 updateDisplays();
                 checkRewardStatus();
                 renderDailyTasks();
@@ -360,69 +457,51 @@
                     showMessage(loginMessageBox, 'Please enter your name!', 'text-red-500');
                 } else {
                     userName = inputName;
-                    loginContainer.classList.add('hidden');
-                    gameAndProfileContainer.classList.remove('hidden');
-                    
                     userNameDisplay.textContent = userName;
                     profileUserNameDisplay.textContent = userName;
-                    
-                    renderDailyTasks();
                     saveGameState();
+                    showGameView();
                 }
             });
 
             logoutButton.addEventListener('click', () => {
-                gameAndProfileContainer.classList.add('hidden');
-                loginContainer.classList.remove('hidden');
-                
                 resetGameState();
+                showLoginView();
             });
 
             // --- Game Logic ---
-
-            /**
-             * Updates the points and rewards displays on the page.
-             */
             function updateDisplays() {
                 pointsDisplay.textContent = points;
-                rewardsClaimedDisplay.textContent = rewardsClaimed + dailyTasksClaimedCount; // Display total rewards
+                rewardsClaimedDisplay.textContent = rewardsClaimed + dailyTasksClaimedCount;
+                currentPointsWithdrawal.textContent = points; // Update the withdrawal page points
             }
 
-            /**
-             * Checks if the user has enough points to claim a reward and updates the reward button state.
-             */
             function checkRewardStatus() {
                 if (points >= rewardCost) {
                     rewardButton.disabled = false;
-                    // Change button styling for active state
                     rewardButton.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
                     rewardButton.classList.add('bg-gradient-to-r', 'from-pink-500', 'to-red-500', 'text-white', 'cursor-pointer');
                 } else {
                     rewardButton.disabled = true;
-                    // Change button styling for disabled state
                     rewardButton.classList.remove('bg-gradient-to-r', 'from-pink-500', 'to-red-500', 'text-white', 'cursor-pointer');
                     rewardButton.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
                 }
             }
 
-            // Event listener for the tap button
             tapButton.addEventListener('click', () => {
                 points += clickValue;
                 tapCount++;
                 updateDisplays();
                 checkRewardStatus();
                 showMessage(gameMessageBox, `+${clickValue} Point!`, 'text-blue-500');
-
                 tapButton.classList.add('tap-effect');
                 setTimeout(() => {
                     tapButton.classList.remove('tap-effect');
                 }, 200);
-
                 renderDailyTasks();
-                saveGameState(); // Save state on every tap
+                saveGameState();
             });
 
-            // Event listener for the reward button
             rewardButton.addEventListener('click', () => {
                 if (points >= rewardCost) {
                     points -= rewardCost;
@@ -431,19 +510,17 @@
                     checkRewardStatus();
                     showMessage(gameMessageBox, 'Reward Claimed!', 'text-green-500');
                     renderDailyTasks();
-                    saveGameState(); // Save state after claiming reward
+                    saveGameState();
                 } else {
                     showMessage(gameMessageBox, 'Not enough points!', 'text-red-500');
                 }
             });
             
-            // Event listener for toggling the profile options
             profileInfoSection.addEventListener('click', () => {
                 profileOptions.classList.toggle('hidden');
                 profileOptions.classList.toggle('scale-95');
                 profileOptions.classList.toggle('opacity-0');
                 
-                // Animate the menu's appearance
                 if (!profileOptions.classList.contains('hidden')) {
                     setTimeout(() => {
                         profileOptions.classList.add('scale-100', 'opacity-100');
@@ -452,25 +529,24 @@
                 }
             });
 
+            // --- New Event Listeners for Withdrawal Page ---
+            rewardsClaimedContainer.addEventListener('click', () => {
+                showWithdrawalView();
+            });
+
+            backToHomeButton.addEventListener('click', () => {
+                showGameView();
+            });
+
             // --- Initial setup on page load ---
             if (loadGameState()) {
-                // If a saved state exists, show the game container
-                loginContainer.classList.add('hidden');
-                gameAndProfileContainer.classList.remove('hidden');
+                showGameView();
                 userNameDisplay.textContent = userName;
                 profileUserNameDisplay.textContent = userName;
             } else {
-                // Otherwise, show the login screen
-                loginContainer.classList.remove('hidden');
-                gameAndProfileContainer.classList.add('hidden');
+                showLoginView();
             }
-
-            updateDisplays();
-            checkRewardStatus();
-            renderDailyTasks();
         };
     </script>
 </body>
 </html>
-
-

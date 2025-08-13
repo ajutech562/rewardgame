@@ -1,573 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tap and Earn Rewards</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Define a custom animation for the tap button */
-        .tap-effect {
-            animation: tap-pulse 0.2s cubic-bezier(0.4, 0, 0.6, 1);
-        }
-
-        @keyframes tap-pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-        }
-        
-        /* Define a custom pulse for the daily tasks heading */
-        .pulse-once {
-            animation: pulse-once 1s ease-in-out;
-        }
-        
-        @keyframes pulse-once {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.05);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-		/* Custom animation for fading in the withdrawal page */
-		@keyframes fadeIn {
-			from { opacity: 0; transform: translateY(20px); }
-			to { opacity: 1; transform: translateY(0); }
-		}
-
-		.animate-fade-in {
-			animation: fadeIn 0.5s ease-out;
-		}
-
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tap & Earn - Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        @keyframes glow-pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 15px rgba(0, 200, 255, 0.7),
+                            0 0 30px rgba(0, 200, 255, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 25px rgba(0, 200, 255, 0.9),
+                            0 0 45px rgba(0, 200, 255, 0.6);
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex items-center justify-center min-h-screen p-4 relative">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen p-4 relative">
 
-    <div id="login-container" class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm flex flex-col items-center space-y-6 transform transition-transform duration-300 hover:scale-105">
+    <!-- Top Bar -->
+    <div class="absolute top-4 left-4 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-md font-bold text-purple-600 dark:text-purple-400">
+        💰 Total: <span id="total-earnings">0</span>
+    </div>
 
-        <div class="flex flex-col items-center space-y-4">
-            <span class="text-7xl">💰</span>
-            <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                Tap & Earn
-            </h1>
-        </div>
+    <!-- Profile Menu -->
+    <div class="absolute top-4 right-4">
+        <div class="relative">
+            <button id="profile-btn" class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg hover:scale-105 transition-transform">
+                <span id="profile-initial"></span>
+            </button>
+            <div id="profile-menu" class="hidden absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transform origin-top-right scale-95 opacity-0 transition-all duration-200 ease-out">
+                <a href="#" id="wallet-btn" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">💰 Wallet</a>
+                <a href="#" id="help-btn" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">❓ Help</a>
+                <a href="#" id="profile-details-btn" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">👤 Profile Details</a>
+                <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-700">🚪 Logout</a>
+                <a href="#" id="delete-account-btn" class="block px-4 py-2 text-sm text-red-700 hover:bg-red-100 dark:hover:bg-red-800">🗑 Delete Account</a>
+            </div>
+        </div>
+    </div>
 
-        <div class="w-full flex flex-col items-center space-y-4">
-            <label for="user-name-input" class="text-lg font-semibold text-gray-700 dark:text-gray-300">
-                Enter your name to play
-            </label>
-            <input type="text" id="user-name-input" placeholder="Your Name" class="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-400 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 transition-all duration-200">
-            <button id="start-button" class="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none">
-                Get Started
-            </button>
-        </div>
+    <!-- Main Game -->
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm mx-auto mt-16 flex flex-col items-center space-y-6">
+        <div class="flex flex-col items-center space-y-2">
+            <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 animate-pulse">
+                Welcome, <span id="user-name-display"></span>!
+            </h1>
+            <span class="text-sm text-gray-500 dark:text-gray-400">Time to earn some points!</span>
+        </div>
 
-        <div id="login-message-box" class="h-6 text-center text-red-500 font-semibold opacity-0 transition-opacity duration-300"></div>
+        <div class="flex flex-col items-center">
+            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Current Points</span>
+            <span id="points-display" class="text-6xl font-bold text-purple-600 dark:text-purple-400 select-none">0</span>
+        </div>
 
-    </div>
+        <button id="tap-button" class="w-48 h-48 bg-gradient-to-br from-green-400 to-blue-500 text-white text-8xl font-black rounded-full shadow-lg transition-all duration-150" style="animation: glow-pulse 2s infinite;">
+            ✨
+        </button>
 
-    <div id="game-and-profile-container" class="hidden w-full max-w-5xl flex flex-col md:flex-row items-start justify-center space-y-8 md:space-y-0 md:space-x-8 p-4 relative">
+        <div id="message-box" class="h-8 text-center text-green-500 font-semibold transition-opacity duration-300 opacity-0"></div>
 
-        <div class="absolute top-4 left-4 right-4 flex justify-between items-center z-50">
-            <div id="rewards-claimed-container" class="bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg flex items-center space-x-2 transform transition-transform duration-200 hover:scale-105 cursor-pointer">
-                <span class="text-xl">🎁</span>
-                <div class="flex flex-col items-start leading-none">
-                    <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">Earned Point</span>
-                    <span id="rewards-claimed-display" class="text-xl font-bold text-purple-600 dark:text-purple-400">0</span>
-                </div>
-            </div>
+        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-2xl w-full flex flex-col items-center space-y-4">
+            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">
+                Claim Reward (Cost: 10 points)
+            </h2>
+            <button id="reward-button" class="w-full px-6 py-3 bg-gray-300 text-gray-500 font-bold rounded-xl shadow-md cursor-not-allowed" disabled>
+                Claim Now
+            </button>
+            <div class="flex items-center space-x-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+                <span>Rewards Claimed:</span>
+                <span id="rewards-claimed-display" class="text-lg font-bold text-purple-600 dark:text-purple-400">0</span>
+            </div>
+        </div>
+    </div>
 
-            <div class="relative group">
-                <div id="profile-info-section" class="bg-white dark:bg-gray-800 rounded-full w-12 h-12 flex items-center justify-center shadow-lg cursor-pointer transform transition-transform duration-200 hover:scale-110">
-                    <span class="text-2xl">👤</span>
-                </div>
-                <div id="profile-options" class="hidden absolute top-14 right-0 w-48 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl transition-all duration-300 origin-top-right transform scale-95 opacity-0">
-                    <div class="flex flex-col items-center space-y-2 mb-4">
-                        <span id="profile-user-name" class="text-lg font-semibold text-purple-600 dark:text-purple-400 text-center"></span>
-                    </div>
-                    <div class="w-full flex flex-col space-y-3">
-                        <button class="w-full px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 focus:outline-none">
-                            Add UPI ID
-                        </button>
-                        <button class="w-full px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 focus:outline-none">
-                            Wallet
-                        </button>
-                        <button class="w-full px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded-lg shadow-sm hover:bg-gray-300 transition-colors duration-200 focus:outline-none">
-                            About
-                        </button>
-                        <button id="logout-button" class="w-full px-4 py-2 bg-red-500 text-white font-bold rounded-lg shadow-md hover:bg-red-600 active:scale-95 transition-all duration-200 focus:outline-none">
-                            Log Out
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Daily Tasks -->
+    <div class="mt-8 max-w-sm mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
+        <h2 class="text-lg font-bold text-purple-600 dark:text-purple-400">📅 Daily Tasks</h2>
+        <button class="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-lg shadow hover:scale-105 transition" onclick="completeTask(50, 'Subscribed to YouTube!')">
+            📺 Subscribe to YouTube Channel — Get 50 Points
+        </button>
+        <button class="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold rounded-lg shadow hover:scale-105 transition" onclick="completeTask(30, 'Followed on Instagram!')">
+            📷 Follow Instagram — Get 30 Points
+        </button>
+        <button class="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg shadow hover:scale-105 transition" onclick="completeTask(20, 'Shared on Social Media!')">
+            📢 Share on Social Media — Get 20 Points
+        </button>
+    </div>
 
-        <div id="game-container" class="mt-28 md:mt-0 bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm flex flex-col items-center space-y-6 transform transition-transform duration-300">
-            <div class="flex flex-col items-center space-y-2">
-                <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 animate-pulse">
-                    Welcome, <span id="user-name-display"></span>!
-                </h1>
-                <span class="text-sm text-gray-500 dark:text-gray-400">Time to earn some points!</span>
-            </div>
+    <div class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 py-3 text-center font-bold text-purple-600 dark:text-purple-400 shadow-inner">
+        <span id="bottom-username"></span>
+    </div>
 
-            <div class="flex flex-col items-center">
-                <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Current Points</span>
-                <span id="points-display" class="text-6xl font-bold text-purple-600 dark:text-purple-400 select-none">0</span>
-            </div>
+    <script>
+        const playerName = localStorage.getItem('playerName');
+        if (!playerName) window.location.href = 'login.html';
+        document.getElementById('user-name-display').textContent = playerName;
+        document.getElementById('bottom-username').textContent = playerName;
+        document.getElementById('profile-initial').textContent = playerName.charAt(0).toUpperCase();
 
-            <button id="tap-button" class="w-48 h-48 bg-gradient-to-br from-green-400 to-blue-500 text-white text-8xl font-black rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all duration-150 transform-gpu focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-600 cursor-pointer">
-                ✨
-            </button>
+        let points = 0;
+        let rewardsClaimed = 0;
+        const rewardCost = 10;
+        const clickValue = 1;
 
-            <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-2xl w-full flex flex-col items-center space-y-4">
-                <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                    Claim Reward (Cost: 10 points)
-                </h2>
-                <button id="reward-button" class="w-full px-6 py-3 bg-gray-300 text-gray-500 font-bold rounded-xl shadow-md transition-all duration-200 transform hover:scale-105 focus:outline-none cursor-not-allowed" disabled>
-                    Claim Now
-                </button>
-            </div>
-        </div>
+        const pointsDisplay = document.getElementById('points-display');
+        const tapButton = document.getElementById('tap-button');
+        const rewardButton = document.getElementById('reward-button');
+        const rewardsClaimedDisplay = document.getElementById('rewards-claimed-display');
+        const totalEarningsDisplay = document.getElementById('total-earnings');
+        const gameMessageBox = document.getElementById('message-box');
 
-        <div class="flex flex-col space-y-8 w-full max-w-sm md:max-w-md">
-            <div id="message-box" class="h-8 text-center text-green-500 font-semibold transition-opacity duration-300 opacity-0"></div>
+        function updateDisplays() {
+            pointsDisplay.textContent = points;
+            rewardsClaimedDisplay.textContent = rewardsClaimed;
+            totalEarningsDisplay.textContent = rewardsClaimed; // always same as rewards claimed
+        }
 
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-2xl w-full flex flex-col items-center space-y-4">
-                <h2 id="daily-tasks-title" class="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                    Daily Tasks
-                </h2>
-                <div id="daily-tasks-list" class="w-full flex flex-col space-y-2">
-                </div>
-            </div>
-        </div>
-    </div>
+        function checkRewardStatus() {
+            rewardButton.disabled = points < rewardCost;
+            rewardButton.className = points >= rewardCost
+                ? 'w-full px-6 py-3 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-xl shadow-md cursor-pointer'
+                : 'w-full px-6 py-3 bg-gray-300 text-gray-500 font-bold rounded-xl shadow-md cursor-not-allowed';
+        }
 
-    <div id="withdrawal-page-container" class="hidden bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-lg md:max-w-xl flex flex-col items-center space-y-6 relative animate-fade-in">
-        <button id="back-to-home-button" class="absolute top-4 left-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-        </button>
+        function showMessage(message, color) {
+            gameMessageBox.className = `h-8 text-center font-semibold transition-opacity duration-300 opacity-100 ${color}`;
+            gameMessageBox.textContent = message;
+            setTimeout(() => {
+                gameMessageBox.classList.replace('opacity-100', 'opacity-0');
+            }, 1500);
+        }
 
-        <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mt-12 md:mt-0">
-            Withdrawal
-        </h2>
-        <p class="text-center text-gray-600 dark:text-gray-400">
-            Current Points: <span id="current-points-withdrawal" class="font-bold text-purple-500">0</span>
-        </p>
+        tapButton.addEventListener('click', () => {
+            points += clickValue;
+            updateDisplays();
+            checkRewardStatus();
+            showMessage(`+${clickValue} Point!`, 'text-blue-500');
+        });
 
-        <div class="w-full overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-xl shadow-md">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Points
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Amount (₹)
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="withdrawal-table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    </tbody>
-            </table>
-        </div>
-    </div>
+        rewardButton.addEventListener('click', () => {
+            if (points >= rewardCost) {
+                points -= rewardCost;
+                rewardsClaimed++;
+                updateDisplays();
+                checkRewardStatus();
+                showMessage('Reward Claimed!', 'text-green-500');
+            }
+        });
 
+        function completeTask(taskPoints, successMessage) {
+            points += taskPoints;
+            updateDisplays();
+            checkRewardStatus();
+            showMessage(`+${taskPoints} Points! ${successMessage}`, 'text-green-500');
+        }
 
-    <script>
-        window.onload = function() {
-            // --- UI Elements ---
-            const loginContainer = document.getElementById('login-container');
-            const gameAndProfileContainer = document.getElementById('game-and-profile-container');
-            const withdrawalPageContainer = document.getElementById('withdrawal-page-container');
-            const userNameInput = document.getElementById('user-name-input');
-            const startButton = document.getElementById('start-button');
-            const logoutButton = document.getElementById('logout-button');
-            const loginMessageBox = document.getElementById('login-message-box');
-            
-            const userNameDisplay = document.getElementById('user-name-display');
-            const profileUserNameDisplay = document.getElementById('profile-user-name');
-            const pointsDisplay = document.getElementById('points-display');
-            const tapButton = document.getElementById('tap-button');
-            const rewardButton = document.getElementById('reward-button');
-            const rewardsClaimedDisplay = document.getElementById('rewards-claimed-display');
-            const gameMessageBox = document.getElementById('message-box');
-            const dailyTasksList = document.getElementById('daily-tasks-list');
-            const dailyTasksTitle = document.getElementById('daily-tasks-title');
-            
-            const profileInfoSection = document.getElementById('profile-info-section');
-            const profileOptions = document.getElementById('profile-options');
+        // Profile menu toggle
+        const profileBtn = document.getElementById('profile-btn');
+        const profileMenu = document.getElementById('profile-menu');
+        profileBtn.addEventListener('click', () => {
+            profileMenu.classList.toggle('hidden');
+        });
 
-            // New elements for the withdrawal page
-            const rewardsClaimedContainer = document.getElementById('rewards-claimed-container');
-            const backToHomeButton = document.getElementById('back-to-home-button');
-            const currentPointsWithdrawal = document.getElementById('current-points-withdrawal');
-            const withdrawalTableBody = document.getElementById('withdrawal-table-body');
+        document.addEventListener('click', (e) => {
+            if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+                profileMenu.classList.add('hidden');
+            }
+        });
 
-            // --- Game State Variables ---
-            let userName = '';
-            let points = 0;
-            let rewardsClaimed = 0;
-            let dailyTasksClaimedCount = 0;
-            let tapCount = 0;
-            const rewardCost = 10;
-            const clickValue = 1;
-            
-            let videoWatched = false;
-            let youtubeSubscribed = false;
-
-            const dailyTasks = [
-                { id: 'tap-task', text: 'Tap 50 times', points: 10, completed: false, check: () => tapCount >= 50 },
-                { id: 'reward-task', text: 'Daily bonus 5Rs', points: 5, completed: false, check: () => rewardsClaimed >= 1 },
-                { id: 'video-task', text: 'Subscribe the channel 8Rs', points: 8, completed: false, check: () => videoWatched },
-                { id: 'youtube-task', text: 'Subscribe to our YouTube channel 8Rs', points: 8, completed: false, check: () => youtubeSubscribed }
-            ];
-
-            const withdrawalOptions = [
-                { points: 100, amount: 10 },
-                { points: 200, amount: 20 },
-                { points: 500, amount: 50 },
-                { points: 1000, amount: 100 }
-            ];
-
-            // --- Utility Functions ---
-            function saveGameState() {
-                const gameState = {
-                    userName,
-                    points,
-                    rewardsClaimed,
-                    dailyTasksClaimedCount,
-                    tapCount,
-                    videoWatched,
-                    youtubeSubscribed,
-                    dailyTasks: dailyTasks.map(task => ({
-                        id: task.id,
-                        completed: task.completed
-                    }))
-                };
-                localStorage.setItem('tapAndEarnGameState', JSON.stringify(gameState));
-            }
-
-            function loadGameState() {
-                const savedState = localStorage.getItem('tapAndEarnGameState');
-                if (savedState) {
-                    const gameState = JSON.parse(savedState);
-                    userName = gameState.userName;
-                    points = gameState.points;
-                    rewardsClaimed = gameState.rewardsClaimed;
-                    dailyTasksClaimedCount = gameState.dailyTasksClaimedCount;
-                    tapCount = gameState.tapCount;
-                    videoWatched = gameState.videoWatched;
-                    youtubeSubscribed = gameState.youtubeSubscribed;
-                    
-                    gameState.dailyTasks.forEach(savedTask => {
-                        const taskToUpdate = dailyTasks.find(task => task.id === savedTask.id);
-                        if (taskToUpdate) {
-                            taskToUpdate.completed = savedTask.completed;
-                        }
-                    });
-
-                    return true;
-                }
-                return false;
-            }
-
-            function showMessage(messageBox, message, color) {
-                messageBox.className = `h-8 text-center font-semibold transition-opacity duration-300 opacity-100 ${color}`;
-                messageBox.textContent = message;
-
-                setTimeout(() => {
-                    messageBox.classList.remove('opacity-100');
-                    messageBox.classList.add('opacity-0');
-                }, 1500);
-            }
-
-            function renderDailyTasks() {
-                dailyTasksList.innerHTML = '';
-                dailyTasks.forEach(task => {
-                    const taskElement = document.createElement('div');
-                    taskElement.className = `flex items-center justify-between p-4 rounded-xl shadow-sm transition-all duration-200 ${task.completed ? 'bg-green-100 dark:bg-green-900' : 'bg-white dark:bg-gray-700'}`;
-                    
-                    const taskText = document.createElement('span');
-                    taskText.className = `font-medium ${task.completed ? 'text-green-700 dark:text-green-300 line-through' : 'text-gray-700 dark:text-gray-300'}`;
-                    taskText.textContent = task.text;
-
-                    taskElement.appendChild(taskText);
-
-                    if (task.completed) {
-                        const checkmark = document.createElement('span');
-                        checkmark.className = 'text-green-500 text-2xl';
-                        checkmark.textContent = '✅';
-                        taskElement.appendChild(checkmark);
-                    } else {
-                        if (task.id === 'video-task' || task.id === 'youtube-task') {
-                            const linkButton = document.createElement('a');
-                            linkButton.textContent = (task.id === 'video-task') ? 'Subscribe 10Rs' : 'Subscribe 10Rs';
-                            linkButton.href = (task.id === 'video-task') ? 'https://www.youtube.com/@SetupC' : 'https://www.youtube.com/@sharpengraphics912';
-                            linkButton.target = '_blank';
-                            linkButton.className = 'px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none';
-
-                            linkButton.addEventListener('click', () => {
-                                if (task.id === 'video-task') {
-                                    videoWatched = true;
-                                } else if (task.id === 'youtube-task') {
-                                    youtubeSubscribed = true;
-                                }
-                                task.completed = true;
-                                points += task.points;
-                                dailyTasksClaimedCount++;
-                                showMessage(gameMessageBox, `+${task.points} Bonus Points!`, 'text-yellow-500');
-                                updateDisplays();
-                                renderDailyTasks();
-                                saveGameState();
-                            });
-                            taskElement.appendChild(linkButton);
-                        } else {
-                            const completeButton = document.createElement('button');
-                            completeButton.textContent = `Claim +${task.points}`;
-                            completeButton.className = 'px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none';
-                            
-                            if (!task.check()) {
-                                completeButton.disabled = true;
-                                completeButton.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-                            }
-                            completeButton.addEventListener('click', () => {
-                                if (task.check()) {
-                                    task.completed = true;
-                                    points += task.points;
-                                    dailyTasksClaimedCount++;
-                                    showMessage(gameMessageBox, `+${task.points} Bonus Points!`, 'text-yellow-500');
-                                    updateDisplays();
-                                    renderDailyTasks();
-                                    saveGameState();
-                                }
-                            });
-                            taskElement.appendChild(completeButton);
-                        }
-                    }
-                    dailyTasksList.appendChild(taskElement);
-                });
-            }
-
-            function renderWithdrawalOptions() {
-                withdrawalTableBody.innerHTML = '';
-                currentPointsWithdrawal.textContent = points;
-                
-                withdrawalOptions.forEach(option => {
-                    const row = document.createElement('tr');
-                    row.className = 'bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200';
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                            ${option.points}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                            ₹${option.amount}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button data-points="${option.points}" class="withdraw-button px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
-                                Withdraw
-                            </button>
-                        </td>
-                    `;
-                    withdrawalTableBody.appendChild(row);
-                });
-
-                // Add event listeners to the new buttons
-                document.querySelectorAll('.withdraw-button').forEach(button => {
-                    const withdrawalPoints = parseInt(button.dataset.points);
-                    if (points >= withdrawalPoints) {
-                        button.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600');
-                        button.disabled = false;
-                    } else {
-                        button.classList.add('bg-gray-300', 'text-gray-500');
-                        button.disabled = true;
-                    }
-
-                    button.addEventListener('click', (event) => {
-                        handleWithdrawal(withdrawalPoints);
-                    });
-                });
-            }
-
-            function handleWithdrawal(withdrawalPoints) {
-                if (points >= withdrawalPoints) {
-                    points -= withdrawalPoints;
-                    rewardsClaimed++; // Consider a separate counter for withdrawals if needed
-                    updateDisplays();
-                    renderWithdrawalOptions();
-                    saveGameState();
-                    // You would add logic here to trigger a real withdrawal process (e.g., show a success message, an input field for UPI ID, etc.)
-                    alert(`Successfully withdrew for ${withdrawalPoints} points! Your new balance is ${points}.`);
-                }
-            }
-
-            // --- View Switching Logic ---
-            function showLoginView() {
-				localStorage.setItem('viewState', 'login');
-                loginContainer.classList.remove('hidden');
-                gameAndProfileContainer.classList.add('hidden');
-                withdrawalPageContainer.classList.add('hidden');
-            }
-
-            function showGameView() {
-				localStorage.setItem('viewState', 'game');
-                loginContainer.classList.add('hidden');
-                gameAndProfileContainer.classList.remove('hidden');
-                withdrawalPageContainer.classList.add('hidden');
-                updateDisplays();
-                checkRewardStatus();
-                renderDailyTasks();
-            }
-
-            function showWithdrawalView() {
-				localStorage.setItem('viewState', 'withdrawal');
-                loginContainer.classList.add('hidden');
-                gameAndProfileContainer.classList.add('hidden');
-                withdrawalPageContainer.classList.remove('hidden');
-                renderWithdrawalOptions();
-				updateDisplays(); // Ensure points are updated when viewing the page
-            }
-
-            // --- Login/Logout Logic ---
-            function resetGameState() {
-                points = 0;
-                rewardsClaimed = 0;
-                dailyTasksClaimedCount = 0;
-                tapCount = 0;
-                videoWatched = false;
-                youtubeSubscribed = false;
-                userNameInput.value = '';
-                dailyTasks.forEach(task => task.completed = false);
-                localStorage.removeItem('tapAndEarnGameState');
-                updateDisplays();
-                checkRewardStatus();
-                renderDailyTasks();
-                profileOptions.classList.add('hidden');
-            }
-
-            startButton.addEventListener('click', () => {
-                const inputName = userNameInput.value.trim();
-                if (inputName === '') {
-                    showMessage(loginMessageBox, 'Please enter your name!', 'text-red-500');
-                } else {
-                    userName = inputName;
-                    userNameDisplay.textContent = userName;
-                    profileUserNameDisplay.textContent = userName;
-                    saveGameState();
-                    showGameView();
-                }
-            });
-
-            logoutButton.addEventListener('click', () => {
-                resetGameState();
-                showLoginView();
-            });
-
-            // --- Game Logic ---
-            function updateDisplays() {
-				// The points on the homepage and withdrawal page must always be the same.
-                pointsDisplay.textContent = points;
-				rewardsClaimedDisplay.textContent = points;
-                currentPointsWithdrawal.textContent = points; // Update the withdrawal page points
-            }
-
-            function checkRewardStatus() {
-                if (points >= rewardCost) {
-                    rewardButton.disabled = false;
-                    rewardButton.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-                    rewardButton.classList.add('bg-gradient-to-r', 'from-pink-500', 'to-red-500', 'text-white', 'cursor-pointer');
-                } else {
-                    rewardButton.disabled = true;
-                    rewardButton.classList.remove('bg-gradient-to-r', 'from-pink-500', 'to-red-500', 'text-white', 'cursor-pointer');
-                    rewardButton.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-                }
-            }
-
-            tapButton.addEventListener('click', () => {
-                points += clickValue;
-                tapCount++;
-                updateDisplays();
-                checkRewardStatus();
-                showMessage(gameMessageBox, `+${clickValue} Point!`, 'text-blue-500');
-                tapButton.classList.add('tap-effect');
-                setTimeout(() => {
-                    tapButton.classList.remove('tap-effect');
-                }, 200);
-                renderDailyTasks();
-                saveGameState();
-            });
-
-            rewardButton.addEventListener('click', () => {
-                if (points >= rewardCost) {
-                    points -= rewardCost;
-                    rewardsClaimed++;
-                    updateDisplays();
-                    checkRewardStatus();
-                    showMessage(gameMessageBox, 'Reward Claimed!', 'text-green-500');
-                    renderDailyTasks();
-                    saveGameState();
-                } else {
-                    showMessage(gameMessageBox, 'Not enough points!', 'text-red-500');
-                }
-            });
-            
-            profileInfoSection.addEventListener('click', () => {
-                profileOptions.classList.toggle('hidden');
-                profileOptions.classList.toggle('scale-95');
-                profileOptions.classList.toggle('opacity-0');
-                
-                if (!profileOptions.classList.contains('hidden')) {
-                    setTimeout(() => {
-                        profileOptions.classList.add('scale-100', 'opacity-100');
-                        profileOptions.classList.remove('scale-95', 'opacity-0');
-                    }, 10);
-                }
-            });
-
-            // --- New Event Listeners for Withdrawal Page ---
-            rewardsClaimedContainer.addEventListener('click', () => {
-                showWithdrawalView();
-            });
-
-            backToHomeButton.addEventListener('click', () => {
-                showGameView();
-            });
-
-            // --- Initial setup on page load ---
-            if (loadGameState()) {
-                const viewState = localStorage.getItem('viewState');
-                if (viewState === 'withdrawal') {
-                    showWithdrawalView();
-                } else {
-                    showGameView();
-                }
-                userNameDisplay.textContent = userName;
-                profileUserNameDisplay.textContent = userName;
-            } else {
-                showLoginView();
-            }
-        };
-    </script>
+        updateDisplays();
+        checkRewardStatus();
+    </script>
 </body>
 </html>

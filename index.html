@@ -190,9 +190,9 @@
             // Updated daily tasks array with the new tasks
             const dailyTasks = [
                 { id: 'tap-task', text: 'Tap 50 times', points: 10, completed: false, check: () => tapCount >= 50 },
-                { id: 'reward-task', text: 'Claim 1 reward', points: 15, completed: false, check: () => rewardsClaimed >= 1 },
-                { id: 'video-task', text: 'Watch a video', points: 5, completed: false, check: () => videoWatched },
-                { id: 'youtube-task', text: 'Subscribe to our YouTube channel', points: 20, completed: false, check: () => youtubeSubscribed }
+                { id: 'reward-task', text: 'Daily bonus 5Rs', points: 5, completed: false, check: () => rewardsClaimed >= 1 },
+                { id: 'video-task', text: 'Subcribe the channel 8Rs', points: 8, completed: false, check: () => videoWatched },
+                { id: 'youtube-task', text: 'Subscribe to our YouTube channel 8Rs', points: 8, completed: false, check: () => youtubeSubscribed }
             ];
 
             // --- Utility Functions ---
@@ -287,7 +287,7 @@
                         // Check if the task is a link-based task
                         if (task.id === 'video-task' || task.id === 'youtube-task') {
                             const linkButton = document.createElement('a');
-                            linkButton.textContent = (task.id === 'video-task') ? 'Watch +5' : 'Subscribe +20';
+                            linkButton.textContent = (task.id === 'video-task') ? 'Subscribe 10Rs' : 'Subscribe 10Rs';
                             linkButton.href = (task.id === 'video-task') ? 'https://www.youtube.com/@SetupC' : 'https://www.youtube.com/@sharpengraphics912';
                             linkButton.target = '_blank';
                             linkButton.className = 'px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none';
@@ -472,4 +472,5 @@
     </script>
 </body>
 </html>
+
 

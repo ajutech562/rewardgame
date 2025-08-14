@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tap & Earn - Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen p-4 relative">
 
@@ -46,17 +49,26 @@
                     <span class="font-bold text-green-500">₹100</span>
                 </li>
             </ul>
-            <p class="mt-4 text-sm">UPI ID: <span class="font-bold">yourupi@bank</span></p>
-            <button id="close-wallet" class="mt-6 w-full py-2 bg-purple-500 text-white rounded hover:bg-purple-600">Close</button>
+            <label for="upi-input" class="mt-4 text-sm block">UPI ID:</label>
+            <input type="text" id="upi-input" class="w-full mt-1 p-2 border rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+            <button id="save-upi-btn" class="mt-4 w-full py-2 bg-purple-500 text-white rounded hover:bg-purple-600">Save UPI</button>
+            <button id="close-wallet" class="mt-6 w-full py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Close</button>
         </div>
     </div>
 
     <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-80 p-6">
             <h2 class="text-lg font-bold mb-4 text-purple-600">Profile Details</h2>
-            <p><strong>Name:</strong> <span id="profile-name"></span></p>
-            <p><strong>Number:</strong> <span id="profile-number">+91-XXXXXXXXXX</span></p>
-            <button id="close-detail" class="mt-4 w-full py-2 bg-blue-500 text-white rounded">Close</button>
+            <p class="text-sm"><strong>Your User ID:</strong> <span id="user-id-display" class="font-mono text-gray-500"></span></p>
+            
+            <label for="profile-name-input" class="block"><strong>Name:</strong></label>
+            <input type="text" id="profile-name-input" class="w-full p-2 mb-2 border rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+            
+            <label for="profile-number-input" class="block"><strong>Number:</strong></label>
+            <input type="tel" id="profile-number-input" class="w-full p-2 mb-4 border rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+            
+            <button id="save-details-btn" class="w-full py-2 bg-purple-500 text-white rounded hover:bg-purple-600">Save Details</button>
+            <button id="close-detail" class="mt-4 w-full py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Close</button>
         </div>
     </div>
 
@@ -116,14 +128,17 @@
 
     <div class="mt-8 max-w-sm mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
         <h2 class="text-lg font-bold text-purple-600 dark:text-purple-400">📅 Daily Tasks</h2>
-        <button class="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-lg shadow hover:scale-105 transition" onclick="completeTask(50, 'Subscribed to YouTube!')">
-            📺 Subscribe to YouTube Channel — Get 50 Points
-        </button>
-        <button class="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold rounded-lg shadow hover:scale-105 transition" onclick="completeTask(30, 'Followed on Instagram!')">
+        
+        <a href="https://www.youtube.com/@sharpengraphics912" target="_blank" id="youtube-task" class="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-lg shadow hover:scale-105 transition flex items-center justify-center space-x-2">
+            <span>📺 Subscribe to YouTube Channel — Get 50 Points</span>
+        </a>
+        
+        <button onclick="completeTask(30, 'Followed on Instagram!')" id="insta-task" class="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold rounded-lg shadow hover:scale-105 transition">
             📷 Follow Instagram — Get 30 Points
         </button>
-        <button class="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg shadow hover:scale-105 transition" onclick="completeTask(20, 'Shared on Social Media!')">
-            📢 Share on Social Media — Get 20 Points
+        
+        <button id="refer-btn" class="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg shadow hover:scale-105 transition">
+            📢 Refer and Earn — Get 20 Points
         </button>
     </div>
 
@@ -131,8 +146,28 @@
         <span id="bottom-username"></span>
     </div>
 
+    <div id="refer-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-80 p-6">
+            <h2 class="text-lg font-bold mb-4 text-purple-600 dark:text-purple-400">📢 Refer and Earn</h2>
+            <p class="text-sm text-gray-700 dark:text-gray-300">Share your unique link and earn rewards!</p>
+            
+            <div class="mt-4 flex items-center space-x-2">
+                <input type="text" id="referral-link" class="w-full p-2 border rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200" readonly>
+                <button id="copy-btn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Copy</button>
+            </div>
+
+            <div class="mt-6">
+                <h3 class="text-md font-semibold text-gray-700 dark:text-gray-300">Referrals Completed: <span id="referral-count">0/5</span></h3>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
+                    <div id="progress-bar" class="bg-purple-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <button id="close-refer" class="mt-6 w-full py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Close</button>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 
 </body>
 </html>
-

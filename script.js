@@ -32,27 +32,44 @@ document.addEventListener("DOMContentLoaded", () => {
             loadUserData();
         }
     }
+    
+    // Call the function to update the user count on page load
+    updateUserCount();
 });
 
 function handleLogin() {
     const loginForm = document.getElementById('login-form');
     const playerNameInput = document.getElementById('player-name-input');
-    
+    const loginAccountBtn = document.getElementById('login-account-btn');
+
+    // Create Account Button
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const playerName = playerNameInput.value.trim();
         if (playerName) {
-            findOrCreateUser(playerName);
+            createNewUser(playerName);
+        } else {
+            alert('Please enter your name to start the game.');
+        }
+    });
+
+    // Login Account Button
+    loginAccountBtn.addEventListener('click', () => {
+        const playerName = playerNameInput.value.trim();
+        if (playerName) {
+            loginExistingUser(playerName);
+        } else {
+            alert('Please enter your name to log in.');
         }
     });
 }
 
-function findOrCreateUser(playerName) {
+function createNewUser(playerName) {
     const usersRef = database.ref('users');
     usersRef.orderByChild('name').equalTo(playerName).once('value', snapshot => {
         if (snapshot.exists()) {
-            // User exists, prevent account creation
-            alert('This name is already taken. Please choose another name.');
+            // User exists, prevent account creation and prompt to log in instead
+            alert('This name is already taken. Please log in or choose another name.');
         } else {
             // New user, create a new entry
             const newUserRef = usersRef.push();
@@ -80,6 +97,21 @@ function findOrCreateUser(playerName) {
                 localStorage.setItem('userId', newUserId);
                 window.location.href = 'index.html';
             });
+        }
+    });
+}
+
+function loginExistingUser(playerName) {
+    const usersRef = database.ref('users');
+    usersRef.orderByChild('name').equalTo(playerName).once('value', snapshot => {
+        if (snapshot.exists()) {
+            // User found, get their user ID and log them in
+            const userId = Object.keys(snapshot.val())[0];
+            localStorage.setItem('userId', userId);
+            window.location.href = 'index.html';
+        } else {
+            // User not found
+            alert('Account not found. Please create a new account.');
         }
     });
 }
@@ -113,6 +145,17 @@ function loadUserData() {
         document.getElementById('profile-name-input').value = userData.name;
         document.getElementById('profile-number-input').value = userData.profile.number;
         document.getElementById('upi-input').value = userData.profile.upiId;
+    });
+}
+
+// Function to fetch and display the total number of users
+function updateUserCount() {
+    database.ref('users').once('value', (snapshot) => {
+        const userCount = snapshot.numChildren();
+        const userCountDisplay = document.getElementById('user-count-display');
+        if (userCountDisplay) {
+            userCountDisplay.textContent = userCount;
+        }
     });
 }
 
@@ -199,7 +242,7 @@ window.completeTask = function(taskPoints, successMessage, taskId) {
         return;
     }
     
-    // New: Ask for confirmation before giving the reward
+    // Ask for confirmation before giving the reward
     if (confirm("Have you completed this task?")) {
         points += taskPoints;
         const updates = {
@@ -259,11 +302,11 @@ function checkReferralStatus() {
 
 
 // Event listener for the YouTube task
-youtubeTaskBtn.addEventListener("click", () => {
+youtubeTaskBtn.addEventListener("click", (event) => {
     if (userData.tasks.youtubeTaskCompleted) {
         return;
     }
-    // New: Ask for confirmation before redirecting to the link and giving points
+    // Ask for confirmation before redirecting to the link and giving points
     if (confirm("Did you subscribe to the YouTube channel? You will be redirected now.")) {
         points += 50;
         const updates = {

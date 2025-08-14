@@ -5,61 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tap & Earn - Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        @keyframes glow-pulse {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 0 15px rgba(0, 200, 255, 0.7),
-                            0 0 30px rgba(0, 200, 255, 0.4);
-            }
-            50% {
-                transform: scale(1.05);
-                box-shadow: 0 0 25px rgba(0, 200, 255, 0.9),
-                            0 0 45px rgba(0, 200, 255, 0.6);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen p-4 relative">
 
-    <!-- Top Bar -->
     <div class="absolute top-4 left-4 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-md font-bold text-purple-600 dark:text-purple-400">
         💰 Total: <span id="total-earnings">0</span>
     </div>
 
-    <!-- Profile Menu -->
     <div class="absolute top-4 right-4">
         <div class="relative">
             <button id="profile-btn" class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg hover:scale-105 transition-transform">
                 <span id="profile-initial"></span>
             </button>
-            <div id="profile-menu" class="hidden absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transform origin-top-right scale-95 opacity-0 transition-all duration-200 ease-out">
-                <a href="#" id="wallet-btn" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">💰 Wallet</a>
-                <a href="#" id="help-btn" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">❓ Help</a>
-                <a href="#" id="profile-details-btn" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">👤 Profile Details</a>
-                <a href="#" id="logout-btn" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-700">🚪 Logout</a>
-                <a href="#" id="delete-account-btn" class="block px-4 py-2 text-sm text-red-700 hover:bg-red-100 dark:hover:bg-red-800">🗑 Delete Account</a>
-            </div>
         </div>
     </div>
 
-    <!-- Profile Modal -->
-<div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-64 p-4">
-        <h2 class="text-lg font-bold mb-4 text-purple-600 dark:text-purple-400">Profile Menu</h2>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">💰 Wallet</a>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">❓ Help</a>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">👤 Profile Details</a>
-        <a href="#" class="block px-4 py-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-700 rounded">🚪 Logout</a>
-        <a href="#" class="block px-4 py-2 text-red-700 hover:bg-red-100 dark:hover:bg-red-800 rounded">🗑 Delete Account</a>
-        <button id="close-modal" class="mt-4 w-full py-2 bg-purple-500 text-white rounded hover:bg-purple-600">Close</button>
+    <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-64 p-4">
+            <h2 class="text-lg font-bold mb-4 text-purple-600 dark:text-purple-400">Profile Menu</h2>
+            <button id="wallet-btn" class="w-full py-2 bg-purple-500 text-white">Wallet</button>
+            <button id="detail-btn" class="w-full py-2 bg-purple-500 text-white ">Profile Details</button>
+            <button id="help-btn" class="w-full py-2 bg-purple-500 text-white">Help</button>
+            <button id="logout-btn" class="w-full py-2 bg-purple-500 text-white">Log out</button>
+            <button id="delete-account-btn" class="w-full py-2 bg-purple-500 text-white">Delete Account</button>
+            <button id="close-modal" class="mt-4 w-full py-2 bg-purple-500 text-white hover:bg-purple-600">Close</button>
+        </div>
     </div>
-</div>
+    
+    <div id="wallet-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-80 p-6">
+            <h2 class="text-lg font-bold mb-4 text-purple-600 dark:text-purple-400">💰 Withdrawal Options</h2>
+            <ul class="space-y-3">
+                <li class="flex justify-between bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                    <span>1000 Points</span>
+                    <span class="font-bold text-green-500">₹10</span>
+                </li>
+                <li class="flex justify-between bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                    <span>10000 Points</span>
+                    <span class="font-bold text-green-500">₹100</span>
+                </li>
+            </ul>
+            <p class="mt-4 text-sm">UPI ID: <span class="font-bold">yourupi@bank</span></p>
+            <button id="close-wallet" class="mt-6 w-full py-2 bg-purple-500 text-white rounded hover:bg-purple-600">Close</button>
+        </div>
+    </div>
 
+    <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-80 p-6">
+            <h2 class="text-lg font-bold mb-4 text-purple-600">Profile Details</h2>
+            <p><strong>Name:</strong> <span id="profile-name"></span></p>
+            <p><strong>Number:</strong> <span id="profile-number">+91-XXXXXXXXXX</span></p>
+            <button id="close-detail" class="mt-4 w-full py-2 bg-blue-500 text-white rounded">Close</button>
+        </div>
+    </div>
 
-    <!-- Main Game -->
+    <div id="help-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-80 p-6">
+            <h2 class="text-lg font-bold mb-4 text-blue-600 dark:text-blue-400">❓ Help & Support</h2>
+            <ul class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                <li class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                    👉 Tap the button on the main screen to earn points.
+                </li>
+                <li class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                    🎯 Claim rewards once you reach the required points.
+                </li>
+                <li class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                    💰 Withdraw your rewards via the Wallet section.
+                </li>
+                <li class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                    📞 For further assistance, email: <span class="font-bold">support@yourapp.com</span>
+                </li>
+            </ul>
+            <button id="close-help" class="mt-6 w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Close</button>
+        </div>
+    </div>
+
     <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm mx-auto mt-16 flex flex-col items-center space-y-6">
         <div class="flex flex-col items-center space-y-2">
             <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 animate-pulse">
@@ -93,7 +114,6 @@
         </div>
     </div>
 
-    <!-- Daily Tasks -->
     <div class="mt-8 max-w-sm mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
         <h2 class="text-lg font-bold text-purple-600 dark:text-purple-400">📅 Daily Tasks</h2>
         <button class="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-lg shadow hover:scale-105 transition" onclick="completeTask(50, 'Subscribed to YouTube!')">
@@ -111,92 +131,7 @@
         <span id="bottom-username"></span>
     </div>
 
-    <script>
-        const playerName = localStorage.getItem('playerName');
-        if (!playerName) window.location.href = 'login.html';
-        document.getElementById('user-name-display').textContent = playerName;
-        document.getElementById('bottom-username').textContent = playerName;
-        document.getElementById('profile-initial').textContent = playerName.charAt(0).toUpperCase();
+    <script src="script.js"></script>
 
-        let points = 0;
-        let rewardsClaimed = 0;
-        const rewardCost = 10;
-        const clickValue = 1;
-
-        const pointsDisplay = document.getElementById('points-display');
-        const tapButton = document.getElementById('tap-button');
-        const rewardButton = document.getElementById('reward-button');
-        const rewardsClaimedDisplay = document.getElementById('rewards-claimed-display');
-        const totalEarningsDisplay = document.getElementById('total-earnings');
-        const gameMessageBox = document.getElementById('message-box');
-
-        function updateDisplays() {
-            pointsDisplay.textContent = points;
-            rewardsClaimedDisplay.textContent = rewardsClaimed;
-            totalEarningsDisplay.textContent = rewardsClaimed; // always same as rewards claimed
-        }
-
-        function checkRewardStatus() {
-            rewardButton.disabled = points < rewardCost;
-            rewardButton.className = points >= rewardCost
-                ? 'w-full px-6 py-3 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-xl shadow-md cursor-pointer'
-                : 'w-full px-6 py-3 bg-gray-300 text-gray-500 font-bold rounded-xl shadow-md cursor-not-allowed';
-        }
-
-        function showMessage(message, color) {
-            gameMessageBox.className = `h-8 text-center font-semibold transition-opacity duration-300 opacity-100 ${color}`;
-            gameMessageBox.textContent = message;
-            setTimeout(() => {
-                gameMessageBox.classList.replace('opacity-100', 'opacity-0');
-            }, 1500);
-        }
-
-        tapButton.addEventListener('click', () => {
-            points += clickValue;
-            updateDisplays();
-            checkRewardStatus();
-            showMessage(`+${clickValue} Point!`, 'text-blue-500');
-        });
-
-        rewardButton.addEventListener('click', () => {
-            if (points >= rewardCost) {
-                points -= rewardCost;
-                rewardsClaimed++;
-                updateDisplays();
-                checkRewardStatus();
-                showMessage('Reward Claimed!', 'text-green-500');
-            }
-        });
-
-        function completeTask(taskPoints, successMessage) {
-            points += taskPoints;
-            updateDisplays();
-            checkRewardStatus();
-            showMessage(`+${taskPoints} Points! ${successMessage}`, 'text-green-500');
-        }
-
-// Modal Logic
-    const profileBtn = document.getElementById("profile-btn");
-    const profileModal = document.getElementById("profile-modal");
-    const closeModalBtn = document.getElementById("close-modal");
-
-    profileBtn.addEventListener("click", () => {
-        profileModal.classList.remove("hidden");
-    });
-
-    closeModalBtn.addEventListener("click", () => {
-        profileModal.classList.add("hidden");
-    });
-
-    profileModal.addEventListener("click", (e) => {
-        if (e.target === profileModal) {
-            profileModal.classList.add("hidden");
-        }
-    });
-
-        updateDisplays();
-        checkRewardStatus();
-        
-    </script>
 </body>
 </html>

@@ -72,9 +72,9 @@ body {
 
 /* Base style for the tap button */
 #tap-button {
-    background-color: #7e82f3; /* Neutral white background for the glow */
+    background-color: #4247ea; /* Neutral white background for the glow */
     color: #000;
-    border: 3px solid #fff;
+    border: 3px solid #0387ca;
     animation: circle-rgb-glow 4s linear infinite; /* Applies the new animation */
     transition: transform 0.2s ease-in-out;
 }

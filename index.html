@@ -6,20 +6,17 @@
     <title>Tap & Earn - Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
-
-    <meta name="d226b23921b83bff8136067ab98fd48d7456ccb9" content="d226b23921b83bff8136067ab98fd48d7456ccb9" />
     
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen p-4 relative">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen p-4 md:p-8 relative">
 
-    <div class="absolute top-4 left-4 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-md font-bold text-purple-600 dark:text-purple-400">
+    <div class="fixed top-4 left-4 z-40 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-md font-bold text-purple-600 dark:text-purple-400">
         💰 Total: <span id="total-earnings">0</span>
     </div>
 
-
-    <div class="absolute top-4 right-4">
+    <div class="fixed top-4 right-4 z-40">
         <div class="relative">
             <button id="profile-btn" class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg hover:scale-105 transition-transform">
                 <span id="profile-initial"></span>
@@ -85,25 +82,30 @@
                 <li class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
                     🎯 Claim rewards once you reach the required points.
                 </li>
+               
                 <li class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
                     💰 Withdraw your rewards via the Wallet section.
                 </li>
                 <li class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
                     📞 For further assistance, email: <span class="font-bold">support@yourapp.com</span>
                 </li>
+                 <li class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg">
+                    👥 Total Users: <strong id="user-count-display">0</strong>
+                </li>
             </ul>
             <button id="close-help" class="mt-6 w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Close</button>
         </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm mx-auto mt-16 flex flex-col items-center space-y-6">
-        <div class="flex flex-col items-center space-y-2">
-            <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 animate-pulse">
-                Welcome, <span id="user-name-display"></span>!
-            </h1>
-            <span class="text-sm text-gray-500 dark:text-gray-400">Time to earn some points!</span>
-        </div>
-   
+    <main class="flex flex-col items-center justify-center min-h-screen">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm mx-auto flex flex-col items-center space-y-6">
+            <div class="flex flex-col items-center space-y-2">
+                <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 animate-pulse">
+                    Welcome, <span id="user-name-display"></span>!
+                </h1>
+                <span class="text-sm text-gray-500 dark:text-gray-400">Time to earn some points!</span>
+            </div>
+         
 <script>
 (function(qjvtq){
 var d = document,
@@ -117,30 +119,31 @@ l.parentNode.insertBefore(s, l);
 })({})
 </script>
 
-        <div class="flex flex-col items-center">
-            <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Current Points</span>
-            <span id="points-display" class="text-6xl font-bold text-purple-600 dark:text-purple-400 select-none">0</span>
-        </div>
+            <div class="flex flex-col items-center">
+                <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Current Points</span>
+                <span id="points-display" class="text-6xl font-bold text-purple-600 dark:text-purple-400 select-none">0</span>
+            </div>
 
-        <button id="tap-button" class="w-48 h-48 bg-gradient-to-br from-green-400 to-blue-500 text-white text-8xl font-black rounded-full shadow-lg transition-all duration-150" style="animation: glow-pulse 2s infinite;">
-            ✨
-        </button>
-
-        <div id="message-box" class="h-8 text-center text-green-500 font-semibold transition-opacity duration-300 opacity-0"></div>
-
-        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-2xl w-full flex flex-col items-center space-y-4">
-            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                Claim Reward (Cost: 10 points)
-            </h2>
-            <button id="reward-button" class="w-full px-6 py-3 bg-gray-300 text-gray-500 font-bold rounded-xl shadow-md cursor-not-allowed" disabled>
-                Claim Now
+            <button id="tap-button" class="w-48 h-48 bg-gradient-to-br from-green-400 to-blue-500 text-white text-8xl font-black rounded-full shadow-lg transition-all duration-150" style="animation: glow-blue-pulse 2s infinite;">
+                ✨
             </button>
-            <div class="flex items-center space-x-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
-                <span>Rewards Claimed:</span>
-                <span id="rewards-claimed-display" class="text-lg font-bold text-purple-600 dark:text-purple-400">0</span>
+
+            <div id="message-box" class="h-8 text-center text-green-500 font-semibold transition-opacity duration-300 opacity-0"></div>
+
+            <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-2xl w-full flex flex-col items-center space-y-4">
+                <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300">
+                    Claim Reward (Cost: 10 points)
+                </h2>
+                <button id="reward-button" class="w-full px-6 py-3 bg-gray-300 text-gray-500 font-bold rounded-xl shadow-md cursor-not-allowed" disabled>
+                    Claim Now
+                </button>
+                <div class="flex items-center space-x-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
+                    <span>Rewards Claimed:</span>
+                    <span id="rewards-claimed-display" class="text-lg font-bold text-purple-600 dark:text-purple-400">0</span>
+                </div>
             </div>
         </div>
-    </div>
+        
 <script>
 (function(vgafu){
 var d = document,
@@ -153,21 +156,24 @@ s.referrerPolicy = 'no-referrer-when-downgrade';
 l.parentNode.insertBefore(s, l);
 })({})
 </script>
-    <div class="mt-8 max-w-sm mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
-        <h2 class="text-lg font-bold text-purple-600 dark:text-purple-400">📅 Daily Tasks</h2>
-        
-        <a href="https://www.youtube.com/@sharpengraphics912" target="_blank" id="youtube-task" class="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-lg shadow hover:scale-105 transition flex items-center justify-center space-x-2">
-            <span>📺 Subscribe to YouTube Channel — Get 50 Points</span>
-        </a>
-        
-        <button onclick="completeTask(30, 'Followed on Instagram!')" id="insta-task" class="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold rounded-lg shadow hover:scale-105 transition">
-            📷 Follow Instagram — Get 30 Points
-        </button>
-        
-        <button id="refer-btn" class="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg shadow hover:scale-105 transition">
-            📢 Refer and Earn — Get 20 Points
-        </button>
-    </div>
+
+        <div class="mt-8 mb-20 max-w-sm mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg space-y-4">
+            <h2 class="text-lg font-bold text-purple-600 dark:text-purple-400">📅 Daily Tasks</h2>
+            
+            <a href="https://www.youtube.com/@sharpengraphics912" target="_blank" id="youtube-task" class="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white font-bold rounded-lg shadow hover:scale-105 transition flex items-center justify-center space-x-2">
+                <span>📺 Subscribe to YouTube Channel — Get 50 Points</span>
+            </a>
+            
+            <button onclick="completeTask(30, 'Followed on Instagram!')" id="insta-task" class="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold rounded-lg shadow hover:scale-105 transition">
+                📷 Follow Instagram — Get 30 Points
+            </button>
+            
+            <button id="refer-btn" class="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-lg shadow hover:scale-105 transition">
+                📢 Refer and Earn — Get 20 Points
+            </button>
+        </div>
+    </main>
+    
 
     <div class="fixed bottom-0 left-0 w-full bg-white dark:bg-gray-800 py-3 text-center font-bold text-purple-600 dark:text-purple-400 shadow-inner">
         <span id="bottom-username"></span>
@@ -191,18 +197,9 @@ l.parentNode.insertBefore(s, l);
             </div>
 
             <button id="close-refer" class="mt-6 w-full py-2 bg-gray-400 text-white rounded hover:bg-gray-500">Close</button>
-            
         </div>
     </div>
-
     
     <script src="script.js"></script>
-
 </body>
 </html>
-
-
-
-
-
-

@@ -101,3 +101,60 @@ body {
 .dark\:text-gray-200 {
     color: #e5e7eb;
 }
+
+/*under new options*/
+
+  .game-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: #f3e8ff; /* light purple */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.game-btn:hover {
+    background: #e9d5ff; /* darker purple on hover */
+    transform: scale(1.05);
+}
+
+.game-btn img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.game-btn span {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    color: #6b21a8; /* purple text */
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    .game-btn {
+        background: #374151;
+        color: #fff;
+    }
+    .game-btn:hover {
+        background: #4076c1; /* slightly lighter dark color on hover */
+        transform: scale(1.25);
+    }
+    .game-btn span {
+        color: #c084fc;
+    }
+}
